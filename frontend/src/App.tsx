@@ -1,79 +1,74 @@
-import React, { useEffect, useState } from 'react';
-import Note from "./components/Note"
-import { Note as NoteModel } from '../src/models/note';
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import styles from './styles/NotesPage.module.css';
-import stylesUtils from './styles/utils.module.css';
-
+import { useEffect, useState } from 'react';
+import { Container } from 'react-bootstrap';
+import LoginModal from './components/LoginModal';
+import NavBar from './components/NavBar';
+import NotesPageLoggedInView from './components/NotesPageLoggedInView';
+import NotesPageLoggedOutView from './components/NotesPageLoggedOutView';
+import SignUpModal from './components/SignUpModal';
+import { User } from './models/user';
 import * as NotesApi from "./network/notes_api";
-import AddEditNoteDialog from './components/AddEditNoteDialog';
-import { FaPlus } from "react-icons/fa"
+import styles from './styles/NotesPage.module.css';
 
-function App() {
-	const [notes, setNotes] = useState<NoteModel[]>([]);
-	const [ShowAddNoteDialog, setShowAddNoteDialog] = useState(false);
-	const [noteToEdit, setNoteToEdit] = useState<NoteModel | null>(null);
 
-	useEffect(() => {
-		async function loadNotes() {
+function App() { 
+
+	const [loggedInUser,setLoggedInUser]= useState<User|null>(null);
+
+	const [showSignUpModal, setShowSignUpModal] = useState(false);
+	const[showLoginModal, setShowLoginModal] = useState(false);
+
+	useEffect(()=>{
+		async function fetchLoggedInUser() {
 			try {
-				const notes = await NotesApi.fetchNotes();
-				setNotes(notes);
+				const user =await NotesApi.getLoggedInUser();
+				setLoggedInUser(user);
 			} catch (error) {
 				console.error(error);
-				alert(error);
 			}
 		}
-		loadNotes();
-	}, []); //if you want execute something only one time when app loads than you have to write [] array
+		fetchLoggedInUser();
+	},[]);
 
-	async function deleteNote(note: NoteModel) {
-		try {
-			await NotesApi.deleteNote(note._id);
-			setNotes(notes.filter(existingNote => existingNote._id !== note._id));
-		} catch (error) {
-			console.error(error);
-			alert(error);
-		}
-	}
+
 	return (
-		<Container>
-			<Button className={`mb-4 ${stylesUtils.blockCenter},${stylesUtils.flexCenter}`} onClick={() => setShowAddNoteDialog(true)}>
-				<FaPlus />
-				Add New Note</Button>
-			<Row xs={1} md={2} xl={3} className='g-4'>
-				{notes.map(note => (
-					<Col key={note._id}>
-						<Note 
-							note={note} 
-							className={styles.note}
-							onNoteClicked={(note) => setNoteToEdit(note)}
-							onDeleteNoteClicked={deleteNote}
-						/>
-					</Col>
-				))}
-			</Row>
-			{ShowAddNoteDialog &&
-				<AddEditNoteDialog
-					onDismiss={() => setShowAddNoteDialog(false)}
-					onNoteSaved={(newNote) => {
-						setNotes([...notes, newNote]);
-						setShowAddNoteDialog(false);
-					}} />
-			}
-			{
-				noteToEdit &&
-				<AddEditNoteDialog
-					noteToEdit={noteToEdit}
-					onDismiss={() => setNoteToEdit(null)}
-					onNoteSaved={(updatedNote) => {
-						setNotes(notes.map(existingNote => existingNote._id === updatedNote._id ? updatedNote : existingNote))
-						setNoteToEdit(null);
+		<div>
+			<NavBar
+				loggedInUser={loggedInUser}
+				onLoginClicked={() => setShowLoginModal(true)}
+				onSignUpClicked={() => setShowSignUpModal(true)}
+				onLogoutSuccessful={() => setLoggedInUser(null)}
+			/>
 
-					}}
-				/>
-			}
-		</Container>
+			<Container className={styles.notesPage}>
+				<>
+					{loggedInUser
+					? <NotesPageLoggedInView/>
+					: <NotesPageLoggedOutView/>
+					}
+				</>
+				
+			</Container>
+			{
+					showSignUpModal &&
+					<SignUpModal
+						onDismiss={() => setShowSignUpModal(false)}
+						onSignUpSuccessful={(user) => {
+							setLoggedInUser(user);
+							setShowSignUpModal(false);
+						 }}
+					/>
+				}
+				{
+					showLoginModal &&
+					<LoginModal
+						onDismiss={() => setShowLoginModal(false)}
+						onLoginSuccesful={(user) => {
+								setLoggedInUser(user);
+								setShowLoginModal(false);
+						 }}
+					/>
+				}
+		</div>
 	);
 }
 

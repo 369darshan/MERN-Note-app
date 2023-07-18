@@ -1,13 +1,13 @@
-
+import MongoStore from "connect-mongo";
 import "dotenv/config";
-import express, { NextFunction } from "express";
-import NoteModel from "./models/note";
-import notesRoutes from "./routes/routes";
+import express from "express";
+import session from "express-session";
+import createHttpError from "http-errors";
 import morgan from "morgan";
-import createHttpError,{isHttpError} from "http-errors";
-import { RequestHandler } from "express";
-
-
+import { requiresAuth } from "./middleware/auth";
+import notesRoutes from "./routes/routes";
+import userRoutes from "./routes/users";
+import env from "./util/validateEnv";
 
 const app = express();
 
@@ -15,7 +15,23 @@ app.use(morgan("dev"));
 
 app.use(express.json());
 
-app.use("/api/notes", notesRoutes);
+app.use(session({
+    secret: env.SESSION_SECRET,
+    resave:false,
+    saveUninitialized:false,
+    cookie:{
+        maxAge: 60*60*1000,
+    },
+    rolling:true,
+    store:MongoStore.create({
+        mongoUrl: env.MONGO_CONNECTION_STRING
+    }),
+}));
+
+app.use("/api/users",userRoutes);
+
+app.use("/api/notes",requiresAuth, notesRoutes);
+
 
 app.use((req,res,next)=>{
     next(createHttpError(404,"Endpoint not found"))
