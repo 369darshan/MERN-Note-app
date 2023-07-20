@@ -1,7 +1,7 @@
+import bcrypt from "bcrypt";
 import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import UserModel from '../models/user';
-import bcrypt from "bcrypt";
 
 export const getAuthenticatedUser: RequestHandler = async (req,res,next)=>{
     // const authenticatedUserId = req.session.userId;

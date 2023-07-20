@@ -1,4 +1,3 @@
-import { error } from "console";
 import Form from "react-bootstrap/esm/Form";
 import { FieldError, RegisterOptions, UseFormRegister } from "react-hook-form";
 
