@@ -2,40 +2,40 @@ import { ConflictError, UnauthorizedError } from "../errors/http_errors";
 import { Note } from "../models/note";
 import { User } from "../models/user";
 
-async function handleApiResponse(response: Response) {
-    if (response.ok) {
-      return response.json();
-    } else {
-      const errorBody = await response.json();
-      const errorMessage = errorBody.error;
-      if (response.status === 401) {
-        throw new UnauthorizedError(errorMessage);
-      } else if (response.status === 409) {
-        throw new ConflictError(errorMessage);
-      } else {
-        throw new Error(`Status: ${response.status}/n Message: ${errorMessage}`);
-      }
-    }
-  }
+// async function handleApiResponse(response: Response) {
+//     if (response.ok) {
+//       return response.json();
+//     } else {
+//       const errorBody = await response.json();
+//       const errorMessage = errorBody.error;
+//       if (response.status === 401) {
+//         throw new UnauthorizedError(errorMessage);
+//       } else if (response.status === 409) {
+//         throw new ConflictError(errorMessage);
+//       } else {
+//         throw new Error(`Status: ${response.status}/n Message: ${errorMessage}`);
+//       }
+//     }
+//   }
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
     const response = await fetch(input, init);
     //New code
-    return handleApiResponse(response);
+    // return handleApiResponse(response);
     //old code
-    // if (response.ok) {
-    //     return response;
-    // } else {
-    //     const errorBody = await response.json();
-    //     const errorMessage = errorBody.error;
-    //     if (response.status === 401) {
-    //         throw new UnauthorizedError(errorMessage);
-    //     } else if (response.status === 409) {
-    //         throw new ConflictError(errorMessage);
-    //     } else {
-    //         throw Error("Status: "+response.status+"/n Message: "+errorMessage);
-    //     }
-    // }
+    if (response.ok) {
+        return response;
+    } else {
+        const errorBody = await response.json();
+        const errorMessage = errorBody.error;
+        if (response.status === 401) {
+            throw new UnauthorizedError(errorMessage);
+        } else if (response.status === 409) {
+            throw new ConflictError(errorMessage);
+        } else {
+            throw Error("Status: " + response.status + "/n Message: " + errorMessage);
+        }
+    }
 }
 
 export async function getLoggedInUser(): Promise<User> {
@@ -63,8 +63,8 @@ export async function signUp(credentials: SignUpCredentials): Promise<User> {
 export interface LoginCredentials {
     username: string,
     password: string,
-    createdAt: string,
-    updatedAt: string,
+    // createdAt: string,
+    // updatedAt: string,
 }
 
 export async function login(credentials: LoginCredentials): Promise<User> {

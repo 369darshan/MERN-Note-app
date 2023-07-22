@@ -13,14 +13,13 @@ interface NoteProps {
     className?: string;
 }
 
-const Note = ({ note, onNoteClicked, onDeleteNoteClicked, className }: NoteProps) => {
-    const {
-        title,
-        text,
-        createdAt,
-        updatedAt,
-
-    } = note;
+const Note = ({
+    note,
+    onNoteClicked,
+    onDeleteNoteClicked,
+    className,
+}: NoteProps) => {
+    const { title, text, createdAt, updatedAt } = note;
 
     let createdUpdatedText: string;
     if (updatedAt > createdAt) {
@@ -31,26 +30,25 @@ const Note = ({ note, onNoteClicked, onDeleteNoteClicked, className }: NoteProps
     return (
         <Card
             onClick={() => onNoteClicked(note)}
-            className={`${styles.noteCard} ${className}`}>
+            className={`${styles.noteCard} ${className}`}
+        >
             <Card.Body className={styles.cardBody}>
                 <Card.Title className={stylesUtils.flexCenter}>
                     {title}
-                    <MdDelete className="text-muted ms-auto"
-                        onClick={(e) => {
-                            onDeleteNoteClicked(note);
-                            e.stopPropagation();
-                        }}
+                    <MdDelete
+                        className="text-muted ms-auto"
+                        // onClick={(e) => {
+                        //     onDeleteNoteClicked(note);
+                        //     e.stopPropagation();
+                        // }}
+                        onClick={(e) => { window.confirm("Do you want to delete this Note?") && onDeleteNoteClicked(note);e.stopPropagation(); }}
+
                     />
                 </Card.Title>
-                <Card.Text className={styles.noteText}>
-                    {text}
-                </Card.Text>
-
+                <Card.Text className={styles.noteText}>{text}</Card.Text>
             </Card.Body>
-            <Card.Footer className="text-muted">
-                {createdUpdatedText}
-            </Card.Footer>
+            <Card.Footer className="text-muted">{createdUpdatedText}</Card.Footer>
         </Card>
-    )
-}
+    );
+};
 export default Note;
