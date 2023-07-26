@@ -1,26 +1,24 @@
-import { Container ,Nav,Navbar} from "react-bootstrap";
+import { Container, Nav, Navbar } from "react-bootstrap";
 import { User } from "../models/user";
 import NavBarLoggedInView from "./NavBarLoggedInView";
 import NavBarLoggedOutView from "./NavBarLoggedOutView";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 
-interface NavBarProps{
+interface NavBarProps {
     loggedInUser: User | null,
-    onSignUpClicked: ()=>void,
-    onLoginClicked: ()=>void,
-
-    onLogoutSuccessful: ()=>void,
-
+    onSignUpClicked: () => void,
+    onLoginClicked: () => void,
+    onLogoutSuccessful: () => void,
 }
 
-const NavBar = ({loggedInUser,onSignUpClicked,onLoginClicked,onLogoutSuccessful}:NavBarProps) => {
-    return ( 
+const NavBar = ({ loggedInUser, onSignUpClicked, onLoginClicked, onLogoutSuccessful }: NavBarProps) => {
+    return (
         <Navbar bg="primary" variant="dark" expand="sm" sticky="top">
             <Container>
                 <Navbar.Brand as={Link} to={"/"} >
                     Note App
                 </Navbar.Brand>
-                <Navbar.Toggle aria-controls="main-navbar"/>
+                <Navbar.Toggle aria-controls="main-navbar" />
                 <Navbar.Collapse id="main-navbar">
                     <Nav>
                         <Nav.Link as={Link} to={"/privacy"}>
@@ -28,15 +26,15 @@ const NavBar = ({loggedInUser,onSignUpClicked,onLoginClicked,onLogoutSuccessful}
                         </Nav.Link>
                     </Nav>
                     <Nav className="ms-auto">
-                        {loggedInUser 
-                        ? <NavBarLoggedInView user={loggedInUser} onLogoutSuccesful={onLogoutSuccessful} />
-                        : <NavBarLoggedOutView onLoginClicked={onLoginClicked} onSignUpClicked={onSignUpClicked} />
+                        {loggedInUser
+                            ? <NavBarLoggedInView user={loggedInUser} onLogoutSuccesful={onLogoutSuccessful} />
+                            : <NavBarLoggedOutView onLoginClicked={onLoginClicked} onSignUpClicked={onSignUpClicked} />
                         }
                     </Nav>
                 </Navbar.Collapse>
             </Container>
         </Navbar>
-     );
+    );
 }
- 
+
 export default NavBar;
