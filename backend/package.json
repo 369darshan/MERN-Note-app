@@ -25,7 +25,7 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "bcrypt": "^5.1.0",
+    "bcrypt": "^6.0.0",
     "connect-mongo": "^5.0.0",
     "dotenv": "^16.3.1",
     "envalid": "^7.3.1",
